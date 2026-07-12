@@ -24,3 +24,11 @@ test('published post page renders its title', async ({ page }) => {
   await page.goto('/blog/welcome');
   await expect(page.getByRole('heading', { name: 'Welcome', level: 1 })).toBeVisible();
 });
+
+test('rss feed includes published post and excludes drafts', async ({ request }) => {
+  const res = await request.get('/rss.xml');
+  expect(res.status()).toBe(200);
+  const body = await res.text();
+  expect(body).toContain('<title>Welcome</title>');
+  expect(body).not.toContain('Draft Example Do Not Publish');
+});
