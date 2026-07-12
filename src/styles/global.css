@@ -1,0 +1,29 @@
+:root {
+  /* Reskin surface: change these to change the whole look. */
+  --color-bg: #ffffff;
+  --color-text: #1a1a1a;
+  --color-muted: #595959;
+  --color-accent: #6b2d2d;
+  --color-rule: #e6e6e6;
+  --font-body: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, -apple-system, sans-serif;
+  --measure: 68ch;
+  --space: 1rem;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 18px; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+main { max-width: var(--measure); margin: 0 auto; padding: 2rem var(--space) 4rem; }
+h1, h2, h3, nav, .site-title { font-family: var(--font-ui); }
+a { color: var(--color-accent); }
+img { max-width: 100%; height: auto; }
+figure { margin: 1.5rem 0; }
+figcaption { font: 0.85rem/1.4 var(--font-ui); color: var(--color-muted); }
+hr { border: none; border-top: 1px solid var(--color-rule); margin: 2rem 0; }
