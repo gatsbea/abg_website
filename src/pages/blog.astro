@@ -1,0 +1,27 @@
+---
+import { getPublishedPosts } from '../utils/posts';
+import Layout from '../layouts/Layout.astro';
+
+const posts = await getPublishedPosts();
+
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<Layout title="Blog — Anna Gatdula">
+  <h1>Blog</h1>
+  <ul class="post-list">
+    {posts.map((post) => (
+      <li>
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+        <time datetime={post.data.pubDate.toISOString()}>{fmt.format(post.data.pubDate)}</time>
+        {post.data.description && <p>{post.data.description}</p>}
+      </li>
+    ))}
+  </ul>
+</Layout>
+<style>
+  .post-list { list-style: none; padding: 0; }
+  .post-list li { margin-bottom: 1.75rem; }
+  .post-list a { font-family: var(--font-ui); font-size: 1.15rem; font-weight: 600; text-decoration: none; }
+  .post-list time { display: block; font: 0.8rem/1.4 var(--font-ui); color: var(--color-muted); margin-top: 0.15rem; }
+  .post-list p { margin: 0.3rem 0 0; color: var(--color-muted); }
+</style>
