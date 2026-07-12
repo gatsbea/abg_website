@@ -1,0 +1,24 @@
+---
+import { render } from 'astro:content';
+import { getPublishedPosts } from '../../utils/posts';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<Layout title={`${post.data.title} — Anna Gatdula`} description={post.data.description}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <time datetime={post.data.pubDate.toISOString()}>{fmt.format(post.data.pubDate)}</time>
+    <Content />
+  </article>
+</Layout>
+<style>
+  article time { display: block; font: 0.85rem/1.4 var(--font-ui); color: var(--color-muted); margin-bottom: 2rem; }
+</style>

@@ -19,3 +19,8 @@ test('draft post URL is not generated (404)', async ({ page }) => {
   const res = await page.goto('/blog/draft-example');
   expect(res?.status()).toBe(404);
 });
+
+test('published post page renders its title', async ({ page }) => {
+  await page.goto('/blog/welcome');
+  await expect(page.getByRole('heading', { name: 'Welcome', level: 1 })).toBeVisible();
+});
