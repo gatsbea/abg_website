@@ -55,7 +55,7 @@ abg_website/
 │   ├── content/
 │   │   └── blog/
 │   │       ├── welcome.md         seed published post
-│   │       └── _draft-example.md  seed draft post (proves the filter)
+│   │       └── draft-example.md   seed draft post (proves the filter)
 │   └── styles/
 │       └── global.css             design tokens + base styles (re-skinnable)
 ├── public/
@@ -262,7 +262,7 @@ git add -A && git commit -m "feat: layout, header, footer, global styles"
 This task establishes the frontmatter contract and proves the draft filter with an automated test — the single most important safety property in the design.
 
 **Files:**
-- Create: `src/content.config.ts`, `src/utils/posts.ts`, `src/content/blog/welcome.md`, `src/content/blog/_draft-example.md`, `playwright.config.ts`, `tests/smoke.spec.ts`
+- Create: `src/content.config.ts`, `src/utils/posts.ts`, `src/content/blog/welcome.md`, `src/content/blog/draft-example.md`, `playwright.config.ts`, `tests/smoke.spec.ts`
 - Modify: `package.json` (add `test:e2e` script)
 
 **Interfaces:**
@@ -319,7 +319,7 @@ draft: false
 This is the first post on my new site. More soon.
 ```
 
-- [ ] **Step 3: Seed a draft post — `src/content/blog/_draft-example.md`**
+- [ ] **Step 3: Seed a draft post — `src/content/blog/draft-example.md` (NO underscore prefix — the file must be LOADED by the collection and excluded solely by `draft: true`, so the test exercises the real draft filter)**
 
 ```markdown
 ---
@@ -376,7 +376,7 @@ test('draft post is absent from the blog index', async ({ page }) => {
 });
 
 test('draft post URL is not generated (404)', async ({ page }) => {
-  const res = await page.goto('/blog/_draft-example');
+  const res = await page.goto('/blog/draft-example');
   expect(res?.status()).toBe(404);
 });
 ```
@@ -429,12 +429,32 @@ const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', d
 </style>
 ```
 
-- [ ] **Step 2: Build check**
+- [ ] **Step 2: Give the home page the shared layout**
 
-Run: `npm run build`
-Expected: exits 0.
+The B1 test suite asserts the home page renders `.site-title` (from `Header`). Replace the
+stock `src/pages/index.astro` with a **minimal** Layout-based home so that passes now. Real
+home content lands in Task D1 — this is an intentional placeholder.
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Anna Gatdula">
+  <h1>Anna Gatdula</h1>
+  <p>Welcome. This site is being set up.</p>
+</Layout>
+```
+
+- [ ] **Step 3: Build + run the suite (home, index, draft tests now green)**
+
+Run: `npm run build` (expect exit 0), then `npm run test:e2e`.
+Expected: the home test, the "blog lists Welcome" test, and both draft tests PASS. (The
+post-page test added in Task B3 is not present yet.)
+
+- [ ] **Step 4: Commit**
+
 ```bash
-git add -A && git commit -m "feat: blog collection schema, seed posts, index page"
+git add -A && git commit -m "feat: blog index page + minimal home wired to layout"
 ```
 
 ---
@@ -448,7 +468,24 @@ git add -A && git commit -m "feat: blog collection schema, seed posts, index pag
 - Consumes: `getPublishedPosts()` from B1, `render(entry)` from `astro:content`.
 - Produces: a static page per non-draft post at `/blog/{id}`. Drafts get no page (the 404 test in B1 depends on this).
 
-- [ ] **Step 1: `src/pages/blog/[...slug].astro`**
+- [ ] **Step 1: Write the failing post-page test — append to `tests/smoke.spec.ts`**
+
+This is B3's real green gate: it proves a published post actually renders (no earlier test
+visits a post page).
+
+```ts
+test('published post page renders its title', async ({ page }) => {
+  await page.goto('/blog/welcome');
+  await expect(page.getByRole('heading', { name: 'Welcome', level: 1 })).toBeVisible();
+});
+```
+
+- [ ] **Step 2: Run — expect FAIL**
+
+Run: `npm run test:e2e -- -g "published post page"`
+Expected: FAIL — `/blog/welcome` 404s (no post route built yet).
+
+- [ ] **Step 3: `src/pages/blog/[...slug].astro`**
 
 ```astro
 ---
@@ -477,12 +514,12 @@ const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', d
 </style>
 ```
 
-- [ ] **Step 2: Run the full Phase B test suite — expect PASS**
+- [ ] **Step 4: Run the full Phase B test suite — expect all PASS**
 
 Run: `npm run test:e2e`
-Expected: all 4 tests PASS (home loads, blog lists Welcome, draft absent from index, draft URL 404s).
+Expected: all 5 tests PASS (home loads, blog lists Welcome, draft absent from index, draft URL 404s, published post page renders its title).
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: individual blog post pages + passing draft-safety tests"
