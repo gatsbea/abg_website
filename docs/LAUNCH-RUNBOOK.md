@@ -19,18 +19,12 @@ the current live Squarespace site until Step 5, and even then it's reversible.
 
 ---
 
-## Step 1 — (Decision) Pick the canonical domain
+## Step 1 — Canonical domain ✅ DECIDED: apex `annagatdula.com`
 
-The site is currently built with **`https://www.annagatdula.com`** as canonical (set in
-`astro.config.mjs`). Personal sites often prefer the bare apex `annagatdula.com`. Decide now
-because it affects the redirect direction later.
-
-- **Keep `www`** → do nothing. (Redirect apex → www in Step 4.)
-- **Switch to apex `annagatdula.com`** → edit `astro.config.mjs`, change
-  `site: 'https://www.annagatdula.com'` to `site: 'https://annagatdula.com'`, commit & push.
-  (Redirect www → apex in Step 4.)
-
-✅ **verify:** `astro.config.mjs` reflects your choice and is pushed.
+The site is built with **`https://annagatdula.com`** as canonical (`site` in
+`astro.config.mjs`). `www.annagatdula.com` will 301-redirect to the apex (set up in Step 4c).
+Nothing more to do here — the hostname is a DNS/hosting choice you fully control once DNS is
+on Cloudflare, independent of Squarespace's current `www` and independent of the registrar.
 
 ---
 
@@ -105,16 +99,14 @@ served by Cloudflare but still pointing at Squarespace.
 
 ### 4c. Set the redirect (canonical from Step 1)
 
-Add a **Redirect Rule** (Cloudflare → your domain → Rules → Redirect Rules) so the
-non-canonical host 301s to the canonical one:
-- If canonical is **www**: redirect `annagatdula.com/*` → `https://www.annagatdula.com/$1`.
-- If canonical is **apex**: redirect `www.annagatdula.com/*` → `https://annagatdula.com/$1`.
+Canonical is the **apex `annagatdula.com`**, so add a **Redirect Rule** (Cloudflare → your
+domain → Rules → Redirect Rules) that 301s www → apex:
+- redirect `www.annagatdula.com/*` → `https://annagatdula.com/$1` (status 301).
 
-✅ **verify:** in a browser (and incognito), `https://annagatdula.com` and
-`https://www.annagatdula.com` both serve the **new** site over HTTPS (Cloudflare
-auto-provisions the certificate — may take a few minutes), and the non-canonical one
-redirects to the canonical one. Recheck the page list from Step 2 on the real domain, on
-both desktop and mobile widths.
+✅ **verify:** in a browser (and incognito), `https://annagatdula.com` serves the **new** site
+over HTTPS (Cloudflare auto-provisions the certificate — may take a few minutes), and
+`https://www.annagatdula.com` **redirects** to it. Recheck the page list from Step 2 on the
+real domain, on both desktop and mobile widths.
 
 ---
 
@@ -195,4 +187,4 @@ that blocks you, just wait it out; nothing else depends on it.)*
 | Local dev | `npm run dev` → http://localhost:4321 |
 | Local prod preview | `npm run preview` |
 | Tests | `npm run test:e2e` |
-| Canonical URL | `https://www.annagatdula.com` (unless changed in Step 1) |
+| Canonical URL | `https://annagatdula.com` (apex; www 301s to it) |
