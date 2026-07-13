@@ -25,6 +25,13 @@ test('published post page renders its title', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Welcome', level: 1 })).toBeVisible();
 });
 
+test('post date renders in UTC without off-by-one shift', async ({ page }) => {
+  // welcome.md has pubDate 2026-07-12 — must display as the same calendar day
+  // regardless of the build machine's timezone (regression guard for local-tz formatting).
+  await page.goto('/blog/');
+  await expect(page.getByText('July 12, 2026')).toBeVisible();
+});
+
 test('rss feed includes published post and excludes drafts', async ({ request }) => {
   const res = await request.get('/rss.xml');
   expect(res.status()).toBe(200);
