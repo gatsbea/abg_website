@@ -8,6 +8,7 @@ interface Props {
   description?: string;
 }
 const { title, description = 'Anna Gatdula — scholar of opera, spectacle, and the cultural history of the atomic bomb.' } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
 <html lang="en">
@@ -16,6 +17,7 @@ const { title, description = 'Anna Gatdula — scholar of opera, spectacle, and 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="Anna Gatdula — Blog" href="/rss.xml" />
   </head>
